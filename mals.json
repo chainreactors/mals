@@ -1,0 +1,14 @@
+{
+    "mals":{
+        "name": "community-elevate",
+        "version": "v0.0.1",
+        "repo_url":"https://github.com/chainreactors/mal-community/blob/master/community-common",
+        "depend_module": [
+            "bof",
+            "execute_exe",
+            "execute_dll",
+            "execute_assembly"
+        ],
+        "help": "This module handles example tasks."
+    }
+}
