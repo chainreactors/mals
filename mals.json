@@ -1,8 +1,0 @@
-{
-    "mals":{
-        "name": "community-elevate",
-        "version": "v0.0.1",
-        "repo_url":"https://github.com/chainreactors/mal-community",
-        "help": "This module handles example tasks."
-    }
-}
