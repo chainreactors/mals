@@ -1,16 +1,13 @@
-{
-    "mals": [
-        {
-            "name": "community-elevate",
-            "version": "nightly",
-            "repo_url": "https://github.com/chainreactors/mal-community",
-            "help": "This module handles example tasks."
-        },
-        {
-            "name": "community-common",
-            "version": "nightly",
-            "repo_url": "https://github.com/chainreactors/mal-community",
-            "help": "This module does something else."
-        }
-    ]
-}
+mals:
+  - name: community-elevate
+    version: nightly
+    repo_url: https://github.com/chainreactors/mal-community
+    help: This module handles example tasks related to elevating user privileges and managing role-based operations.
+  - name: community-common
+    version: nightly
+    repo_url: https://github.com/chainreactors/mal-community
+    help: This module provides common utilities and shared functionality for other community modules.
+  - name: community-proxy
+    version: nightly
+    repo_url: https://github.com/chainreactors/mal-community
+    help: This module acts as a proxy for managing requests and routing traffic between different components in the system.
