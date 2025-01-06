@@ -1,8 +1,6 @@
 module github.com/chainreactors/mals
 
-go 1.21
-
-toolchain go1.22.3
+go 1.17
 
 require (
 	al.essio.dev/pkg/shellescape v1.5.1
