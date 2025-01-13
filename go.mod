@@ -1,8 +1,6 @@
 module github.com/chainreactors/mals
 
-go 1.21
-
-toolchain go1.22.7
+go 1.20
 
 require (
 	al.essio.dev/pkg/shellescape v1.5.1
@@ -19,7 +17,7 @@ require (
 	github.com/tengattack/gluacrypto v0.0.0-20240324200146-54b58c95c255
 	github.com/yuin/gluamapper v0.0.0-20150323120927-d836955830e7
 	github.com/yuin/gopher-lua v1.1.1
-	google.golang.org/protobuf v1.36.1
+	google.golang.org/protobuf v1.34.1
 	gopkg.in/yaml.v3 v3.0.1
 	layeh.com/gopher-luar v1.0.11
 )
