@@ -736,10 +736,15 @@ func RegisterProtobufMessagesFromPackage(L *lua.LState, pkg string) {
 		messageName := string(mt.Descriptor().FullName())
 
 		// 检查 message 是否属于指定包
-		if len(pkg) == 0 || messageName == pkg || (len(messageName) >= len(pkg) && messageName[:len(pkg)] == pkg) {
-			// 将每个 message 注册为 Lua 类型
-			RegisterProtobufMessage(L, messageName, mt.New().Interface().(proto.Message))
+		kv := strings.Split(messageName, ".")
+		if len(kv) == 2 {
+			if pkg == kv[0] {
+				RegisterProtobufMessage(L, kv[1], mt.New().Interface().(proto.Message))
+			}
+		} else {
+			return true
 		}
+
 		return true
 	})
 }
@@ -756,15 +761,21 @@ func RegisterProtobufMessage(L *lua.LState, msgType string, msg proto.Message) {
 
 	// 新增 New 方法，用于创建该消息的空实例
 	L.SetField(mt, "New", L.NewFunction(func(L *lua.LState) int {
-		// 创建一个该消息的空实例
 		newMsg := proto.Clone(msg).(proto.Message)
 
-		// 将新创建的消息封装为 UserData
+		if L.GetTop() == 1 {
+			initTable := L.CheckTable(1)
+			initTable.ForEach(func(key lua.LValue, value lua.LValue) {
+				fieldName := key.String()
+				fieldValue := ConvertLuaValueToGo(value)
+				setFieldByName(newMsg, fieldName, fieldValue)
+			})
+		}
 		ud := L.NewUserData()
 		ud.Value = newMsg
 		L.SetMetatable(ud, L.GetTypeMetatable(msgType))
-		L.Push(ud)
 
+		L.Push(ud)
 		return 1 // 返回新建的消息实例
 	}))
 }
@@ -844,8 +855,7 @@ func truncateMessageFields(msg proto.Message) proto.Message {
 }
 
 func protoNew(L *lua.LState) int {
-	// 获取消息类型名称
-	msgTypeName := L.CheckString(2) // 这里确保第一个参数是字符串类型
+	msgTypeName := L.CheckString(1) // 这里确保第一个参数是字符串类型
 
 	// 查找消息类型
 	msgType, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(msgTypeName))
@@ -855,19 +865,16 @@ func protoNew(L *lua.LState) int {
 		return 2
 	}
 
-	// 创建消息实例
 	msg := msgType.New().Interface()
 
-	// 初始化字段
 	if L.GetTop() > 1 {
-		initTable := L.CheckTable(3)
+		initTable := L.CheckTable(2)
 		initTable.ForEach(func(key lua.LValue, value lua.LValue) {
 			fieldName := key.String()
 			fieldValue := ConvertLuaValueToGo(value)
 			setFieldByName(msg, fieldName, fieldValue)
 		})
 	}
-
 	// 将消息实例返回给 Lua
 	ud := L.NewUserData()
 	ud.Value = msg
