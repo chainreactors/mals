@@ -3,13 +3,6 @@ package mals
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"os"
-	"reflect"
-	"sort"
-	"strings"
-	"unicode"
-
 	"github.com/chainreactors/mals/libs/gopher-lua-libs/argparse"
 	"github.com/chainreactors/mals/libs/gopher-lua-libs/base64"
 	"github.com/chainreactors/mals/libs/gopher-lua-libs/cmd"
@@ -38,6 +31,11 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
 	"layeh.com/gopher-luar"
+	"net/http"
+	"os"
+	"reflect"
+	"sort"
+	"strings"
 
 	"github.com/chainreactors/logs"
 	"github.com/chainreactors/utils/iutils"
@@ -472,8 +470,8 @@ func RegisterProtobufMessageType(L *lua.LState) {
 	L.SetField(mt, "New", L.NewFunction(protoNew))
 }
 
-func GenerateLuaDefinitionFile(L *lua.LState, filename string, protos []string, fns map[string]*MalFunction) error {
-	file, err := os.Create(filename)
+func GenerateLuaDefinitionFile(L *lua.LState, pkg string, protos []string, fns map[string]*MalFunction) error {
+	file, err := os.Create(pkg + ".lua")
 	if err != nil {
 		return err
 	}
@@ -484,10 +482,13 @@ func GenerateLuaDefinitionFile(L *lua.LState, filename string, protos []string, 
 	// 按 package 分组，然后在每个分组内按 funcName 排序
 	groupedFunctions := make(map[string][]string)
 	for funcName, signature := range fns {
-		if unicode.IsUpper(rune(funcName[0])) {
-			continue
+		if pkg == signature.Package {
+			var group string
+			if signature.Helper != nil && signature.Helper.Group != "" {
+				group = signature.Helper.Group
+			}
+			groupedFunctions[group] = append(groupedFunctions[group], funcName)
 		}
-		groupedFunctions[signature.Package] = append(groupedFunctions[signature.Package], funcName)
 	}
 
 	// 排序每个 package 内的函数名
