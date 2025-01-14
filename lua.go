@@ -530,7 +530,7 @@ func GenerateLuaDefinitionFile(L *lua.LState, filename string, protos []string, 
 			var paramsName []string
 			for i, argType := range signature.ArgTypes {
 				luaType := ConvertGoValueToLuaType(L, argType)
-				if signature.Helper == nil {
+				if signature.Helper == nil && signature.Input != nil {
 					paramsName = append(paramsName, fmt.Sprintf("arg%d", i+1))
 					fmt.Fprintf(file, "--- @param arg%d %s\n", i+1, luaType)
 				} else {
@@ -543,7 +543,7 @@ func GenerateLuaDefinitionFile(L *lua.LState, filename string, protos []string, 
 			}
 			for _, returnType := range signature.ReturnTypes {
 				luaType := ConvertGoValueToLuaType(L, returnType)
-				if signature.Helper == nil {
+				if signature.Helper == nil && signature.Output != nil {
 					fmt.Fprintf(file, "--- @return %s\n", luaType)
 				} else {
 					keys, values := signature.Helper.FormatOutput()
