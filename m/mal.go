@@ -6,9 +6,17 @@ import (
 )
 
 var (
-	MalIndexFileName = "mals.yaml"
-	ManifestFileName = "mal.yaml"
-	DefaultMalName   = "Default"
+	MalIndexFileName  = "mals.yaml"
+	ManifestFileName  = "mal.yaml"
+	DefaultMalName    = "Default"
+	DefaultMalRepoURL = "https://api.github.com/repos/chainreactors/mals/releases"
+
+	DefaultMalConfig = &MalConfig{
+		//PublicKey: DefaultArmoryPublicKey,
+		RepoURL: DefaultMalRepoURL,
+		Name:    DefaultMalName,
+		Enabled: true,
+	}
 
 	//malIndexSigFileName = "mal.minisig"
 )
@@ -34,13 +42,4 @@ type MalHTTPConfig struct {
 	ProxyURL             *url.URL
 	Timeout              time.Duration
 	DisableTLSValidation bool
-}
-
-var DefaultMalRepoURL = "https://api.github.com/repos/chainreactors/mals/releases"
-
-var DefaultMalConfig = &MalConfig{
-	//PublicKey: DefaultArmoryPublicKey,
-	RepoURL: DefaultMalRepoURL,
-	Name:    DefaultMalName,
-	Enabled: true,
 }
