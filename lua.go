@@ -9,6 +9,15 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/chainreactors/logs"
+	"github.com/chainreactors/utils/iutils"
+	lua "github.com/yuin/gopher-lua"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/reflect/protoregistry"
+	luar "layeh.com/gopher-luar"
+
 	"github.com/chainreactors/mals/libs/gopher-lua-libs/argparse"
 	"github.com/chainreactors/mals/libs/gopher-lua-libs/base64"
 	"github.com/chainreactors/mals/libs/gopher-lua-libs/cmd"
@@ -31,15 +40,6 @@ import (
 	"github.com/chainreactors/mals/libs/gopher-lua-libs/yaml"
 	"github.com/cjoudrey/gluahttp"
 	gluacrypto_crypto "github.com/tengattack/gluacrypto/crypto"
-	lua "github.com/yuin/gopher-lua"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/reflect/protoregistry"
-	luar "layeh.com/gopher-luar"
-
-	"github.com/chainreactors/logs"
-	"github.com/chainreactors/utils/iutils"
 )
 
 var (
@@ -305,10 +305,10 @@ func ConvertGoValueToLua(L *lua.LState, value interface{}) lua.LValue {
 	switch v := value.(type) {
 	case proto.Message:
 		// 如果是 proto.Message 类型，将其封装为 LUserData 并设置元表
-		ud := L.NewUserData()
-		ud.Value = v
-		L.SetMetatable(ud, L.GetTypeMetatable("ProtobufMessage"))
-		return ud
+		table1 := L.GetTypeMetatable("ProtobufMessage")
+		val := luar.New(L, v)
+		mergeLTable(val.(*lua.LUserData).Metatable.(*lua.LTable), table1.(*lua.LTable))
+		return val
 	case []string:
 		// 如果是 []string 类型，将其转换为 Lua 表
 		luaTable := L.NewTable()
@@ -462,7 +462,7 @@ func RegisterProtobufMessageType(L *lua.LState) {
 	L.SetGlobal("ProtobufMessage", mt)
 
 	// 注册 __index 和 __newindex 元方法
-	L.SetField(mt, "__index", L.NewFunction(protoIndex))
+	//L.SetField(mt, "__index", L.NewFunction(protoIndex))
 	L.SetField(mt, "__newindex", L.NewFunction(protoNewIndex))
 
 	// 注册 __tostring 元方法
@@ -937,4 +937,10 @@ func setFieldByName(msg proto.Message, fieldName string, newValue interface{}) {
 			val.Set(newVal.Convert(val.Type()))
 		}
 	}
+}
+
+func mergeLTable(table1, table2 *lua.LTable) {
+	table2.ForEach(func(key, value lua.LValue) {
+		table1.RawSet(key, value)
+	})
 }
