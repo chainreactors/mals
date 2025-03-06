@@ -381,6 +381,7 @@ func GlobalLoader(name string, content []byte) func(L *lua.LState) int {
 		L.Pop(1)
 
 		if mod.Type() != lua.LTTable {
+			logs.Log.Errorf("error loading Lua global script: expected table, got %s", mod.Type().String())
 			mod = L.NewTable()
 		}
 		L.SetField(mod, "_NAME", lua.LString(name))
