@@ -372,8 +372,13 @@ func ConvertNumericType(value int64, kind reflect.Kind) interface{} {
 	}
 }
 
-func GlobalLoader(name string, content []byte) func(L *lua.LState) int {
+func GlobalLoader(name string, path, content []byte) func(L *lua.LState) int {
 	return func(L *lua.LState) int {
+		packageTable := L.GetGlobal("package")
+		currentPath := L.GetField(packageTable, "path")
+		newPath := fmt.Sprintf("%s;%s/?.lua;%s/?/?.lua;%s/?/?/?.lua", currentPath, path, path, path)
+		L.SetField(packageTable, "path", lua.LString(newPath))
+
 		if err := L.DoString(string(content)); err != nil {
 			logs.Log.Errorf("error loading Lua global script: %s", err.Error())
 		}
