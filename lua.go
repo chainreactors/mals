@@ -372,7 +372,7 @@ func ConvertNumericType(value int64, kind reflect.Kind) interface{} {
 	}
 }
 
-func GlobalLoader(name string, path, content []byte) func(L *lua.LState) int {
+func GlobalLoader(name, path string, content []byte) func(L *lua.LState) int {
 	return func(L *lua.LState) int {
 		packageTable := L.GetGlobal("package")
 		currentPath := L.GetField(packageTable, "path")
