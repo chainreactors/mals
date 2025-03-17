@@ -919,18 +919,36 @@ func setFieldByName(msg proto.Message, fieldName string, newValue interface{}) {
 	if val.IsValid() && val.CanSet() {
 		// 将 Lua 值转换为 Go 值并直接设置
 		newVal := reflect.ValueOf(newValue)
-
 		// 特别处理 []byte 类型
 		if val.Kind() == reflect.Slice && val.Type().Elem().Kind() == reflect.Uint8 {
 			if str, ok := newValue.(string); ok {
 				newVal = reflect.ValueOf([]byte(str))
+			}
+		} else if val.Kind() == reflect.Slice && val.Type().Elem().Kind() == reflect.String {
+			// 特别处理 []interface{} 到 []string 的转换
+			if newVal.Kind() == reflect.Slice && newVal.Type().Elem().Kind() == reflect.Interface {
+				slice := newValue.([]interface{})
+				strSlice := make([]string, len(slice))
+				for i, v := range slice {
+					if str, ok := v.(string); ok {
+						strSlice[i] = str
+					} else {
+						fmt.Printf("element %d in %s is not a string\n", i, fieldName)
+						return
+					}
+				}
+				newVal = reflect.ValueOf(strSlice)
 			}
 		}
 
 		// 检查是否可以直接设置值
 		if newVal.Type().ConvertibleTo(val.Type()) {
 			val.Set(newVal.Convert(val.Type()))
+		} else {
+			fmt.Printf("Error: cannot convert %s to %s \n", fieldName, val.Type())
 		}
+	} else {
+		fmt.Printf("Error: invalid field: %s \n", fieldName)
 	}
 }
 
