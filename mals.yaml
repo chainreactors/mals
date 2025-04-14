@@ -1,4 +1,8 @@
 mals:
+  - name: community-lib
+    repo_url: https://github.com/chainreactors/mal-community
+    version: nightly
+    help: This module provides a library of common functions and utilities for the community modules.
   - name: community-elevate
     version: nightly
     repo_url: https://github.com/chainreactors/mal-community
@@ -11,3 +15,15 @@ mals:
     version: nightly
     repo_url: https://github.com/chainreactors/mal-community
     help: This module acts as a proxy for managing requests and routing traffic between different components in the system.
+  - name: community-move
+    version: nightly
+    repo_url: https://github.com/chainreactors/mal-community
+    help: This module provides functionality for lateral movement within the system, allowing users to navigate and interact with different components.
+  - name: community-persistence
+    version: nightly
+    repo_url: https://github.com/chainreactors/mal-community
+    help: This module provides functionality for implant persistence and storage management within the system.
+  - name: community-domain
+    version: nightly
+    repo_url: https://github.com/chainreactors/mal-community
+    help: This module provides functionality for domain enumeration and pentest within the system.
