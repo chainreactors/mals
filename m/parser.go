@@ -182,20 +182,20 @@ func ParserMalYaml(url, path string, clientConfig MalHTTPConfig) (MalsYaml, erro
 }
 
 // GithubMalPackageParser - Uses github.com instead of api.github.com to download packages
-func GithubMalPackageParser(repoURL string, pkgName string, version string, path string, clientConfig MalHTTPConfig) error {
+func GithubMalPackageParser(repoURL string, pkgName string, version string, downloadPath string, clientConfig MalHTTPConfig) error {
 	var tarGz []byte
 
 	tarGzURL, err := url.Parse(repoURL)
 	if err != nil {
 		return fmt.Errorf("failed to parse mal pkg url '%s': %s", repoURL, err)
 	}
-	tarGzURL.Path = filepath.Join(tarGzURL.Path, "releases", "download", version, fmt.Sprintf("%s.tar.gz", pkgName))
+	tarGzURL.Path = path.Join(tarGzURL.Path, "releases", "download", version, fmt.Sprintf("%s.tar.gz", pkgName))
 	tarGz, err = downloadRequest(clientConfig, tarGzURL.String())
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile(filepath.Join(path, fmt.Sprintf("%s.tar.gz", pkgName)), tarGz, 0644)
+	err = os.WriteFile(filepath.Join(downloadPath, fmt.Sprintf("%s.tar.gz", pkgName)), tarGz, 0644)
 	if err != nil {
 		return err
 	}
