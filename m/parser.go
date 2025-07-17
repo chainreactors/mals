@@ -96,7 +96,7 @@ func downloadRequest(clientConfig MalHTTPConfig, reqURL string) ([]byte, error) 
 }
 
 // Intercepts 302 redirect to determine the latest version tag
-func githubTagParser(repoUrl string, version string, clientConfig MalHTTPConfig) (string, error) {
+func GithubTagParser(repoUrl string, version string, clientConfig MalHTTPConfig) (string, error) {
 	client := httpClient(clientConfig)
 	client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
