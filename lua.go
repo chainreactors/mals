@@ -692,7 +692,7 @@ func generateProtobufMessageClasses(L *lua.LState, file *os.File, grpcPackage []
 	})
 }
 
-// 移除前缀 clientpb 或 implantpb
+// 移除前缀 或 implantpb
 func removePrefix(messageName string) string {
 	i := strings.Index(messageName, ".")
 	if i == -1 {
